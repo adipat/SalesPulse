@@ -1,0 +1,11 @@
+customer_name,email,phone,city,state,product_name,category,quantity,selling_price,payment_method,status
+Kunal Mehra,kunal.m@example.com,9820011122,Mumbai,Maharashtra,Dell XPS 13 Laptop,Electronics,1,75000.00,Credit Card,Delivered
+Meera Nambiar,meera.n@example.com,9840022233,Chennai,Tamil Nadu,Sony WH-1000XM5 Headphones,Electronics,1,24999.00,UPI,Delivered
+Siddharth Rao,sid.rao@example.com,9880033344,Bengaluru,Karnataka,USB-C 7-in-1 Hub,Computer Accessories,3,2499.00,UPI,Delivered
+Tanvi Deshmukh,tanvi.d@example.com,9823044455,Pune,Maharashtra,Anti-Skid Pro Yoga Mat,Fitness & Sports,2,1299.00,Cash on Delivery,Delivered
+Abhishek Joshi,abhishek.j@example.com,9819055566,Mumbai,Maharashtra,Ergonomic Mesh Chair,Home & Living,1,11500.00,Net Banking,Processing
+Deepa Roy,deepa.roy@example.com,9831066677,Kolkata,West Bengal,Classic Cotton Crewneck T-Shirt,Fashion & Apparel,4,699.00,UPI,Delivered
+Naveen Kumar,naveen.k@example.com,9845077788,Hyderabad,Telangana,Adjustable Dumbbell Set (20kg),Fitness & Sports,1,4999.00,Debit Card,Delivered
+Alok Pandey,alok.p@example.com,9811088899,Delhi,Delhi,Keychron K2 Mechanical Keyboard,Computer Accessories,1,7499.00,Credit Card,Shipped
+Shweta Bhat,shweta.b@example.com,9822099900,Pune,Maharashtra,Smart LED Desk Lamp,Home & Living,2,1999.00,UPI,Delivered
+Tarun Sen,tarun.sen@example.com,9849012345,Hyderabad,Telangana,Slim-Fit Stretch Denim Jeans,Fashion & Apparel,2,1899.00,Cash on Delivery,Cancelled

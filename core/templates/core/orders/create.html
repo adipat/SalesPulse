@@ -1,0 +1,178 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Create Order | E-Commerce Sales Analytics{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="h4 fw-bold mb-1">Create New Order</h2>
+            <p class="text-muted small mb-0">Record a customer sale with multiple line items</p>
+        </div>
+        <a href="{% url 'core:order_list' %}" class="btn btn-sm btn-outline-secondary">
+            &larr; Back to Orders
+        </a>
+    </div>
+
+    <form method="POST" id="orderForm">
+        {% csrf_token %}
+        <div class="row g-4">
+            <!-- Customer & Order Meta -->
+            <div class="col-lg-4">
+                <div class="card p-3 shadow-sm h-100">
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Customer & Details</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Customer</label>
+                        {{ order_form.customer }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Payment Method</label>
+                        {{ order_form.payment_method }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Order Status</label>
+                        {{ order_form.status }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Shipping City</label>
+                        {{ order_form.shipping_city }}
+                        <div class="form-text small">Leave blank to use customer city</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Shipping State</label>
+                        {{ order_form.shipping_state }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products / Line Items (OrderItems) -->
+            <div class="col-lg-8">
+                <div class="card p-3 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <div>
+                            <h5 class="fw-bold mb-0">Order Line Items</h5>
+                            <span class="text-muted small">Each item stores historical selling price for financial consistency</span>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="addItemBtn">
+                            <i class="bi bi-plus"></i> Add Another Product
+                        </button>
+                    </div>
+
+                    <div id="itemsContainer">
+                        <!-- Line item row template -->
+                        <div class="item-row p-3 mb-2 bg-light rounded border">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-md-5">
+                                    <label class="form-label small fw-semibold mb-1">Select Product</label>
+                                    <select name="product_id[]" class="form-select product-dropdown" required>
+                                        <option value="" disabled selected>-- Choose Product --</option>
+                                        {% for prod in products %}
+                                            <option value="{{ prod.id }}" data-price="{{ prod.price }}" data-stock="{{ prod.stock }}">
+                                                {{ prod.name }} (Stock: {{ prod.stock }}, ₹{{ prod.price }})
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label small fw-semibold mb-1">Quantity</label>
+                                    <input type="number" name="quantity[]" class="form-control qty-field" min="1" value="1" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-semibold mb-1">Unit Price (₹)</label>
+                                    <input type="number" step="0.01" name="price[]" class="form-control price-field" placeholder="Price" required>
+                                </div>
+                                <div class="col-md-2 text-end pt-4">
+                                    <button type="button" class="btn btn-outline-danger btn-sm remove-row-btn" title="Remove Item">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Total Summary -->
+                    <div class="card bg-white mt-4 p-3 border">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h6 mb-0 text-muted">Estimated Order Total:</span>
+                            <span class="h4 mb-0 text-primary fw-bold" id="orderTotalPreview">₹0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="{% url 'core:order_list' %}" class="btn btn-light">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4">Create Order</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('itemsContainer');
+    const addBtn = document.getElementById('addItemBtn');
+    const totalPreview = document.getElementById('orderTotalPreview');
+
+    function calculateTotal() {
+        let total = 0;
+        const rows = container.querySelectorAll('.item-row');
+        rows.forEach(row => {
+            const qty = parseFloat(row.querySelector('.qty-field').value) || 0;
+            const price = parseFloat(row.querySelector('.price-field').value) || 0;
+            total += qty * price;
+        });
+        totalPreview.textContent = '₹' + total.toFixed(2);
+    }
+
+    function setupRowEvents(row) {
+        const select = row.querySelector('.product-dropdown');
+        const priceField = row.querySelector('.price-field');
+        const qtyField = row.querySelector('.qty-field');
+        const removeBtn = row.querySelector('.remove-row-btn');
+
+        select.addEventListener('change', function() {
+            const selectedOption = select.options[select.selectedIndex];
+            const defaultPrice = selectedOption.getAttribute('data-price');
+            if (defaultPrice) {
+                priceField.value = defaultPrice;
+            }
+            calculateTotal();
+        });
+
+        priceField.addEventListener('input', calculateTotal);
+        qtyField.addEventListener('input', calculateTotal);
+
+        removeBtn.addEventListener('click', function() {
+            if (container.querySelectorAll('.item-row').length > 1) {
+                row.remove();
+                calculateTotal();
+            } else {
+                alert('An order must have at least one product line item.');
+            }
+        });
+    }
+
+    // Attach to initial row
+    setupRowEvents(container.querySelector('.item-row'));
+
+    // Add new row dynamically
+    addBtn.addEventListener('click', function() {
+        const firstRow = container.querySelector('.item-row');
+        const newRow = firstRow.cloneNode(true);
+        newRow.querySelector('.product-dropdown').selectedIndex = 0;
+        newRow.querySelector('.qty-field').value = 1;
+        newRow.querySelector('.price-field').value = '';
+        setupRowEvents(newRow);
+        container.appendChild(newRow);
+    });
+});
+</script>
+{% endblock %}
