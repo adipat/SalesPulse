@@ -1,12 +1,12 @@
-# E-Commerce Sales Analytics System
+# SalesPulse ⚡ — E-Commerce Management & Sales Analytics Suite
 
-A production-style Django & Python web application designed for comprehensive e-commerce transaction management and real-time business analytics. Built with **Django**, **SQLite**, **Pandas**, **NumPy**, and **Plotly**.
+A modern, production-grade Django & Python web application designed for comprehensive e-commerce transaction management and real-time business analytics. Built with **Django**, **SQLite**, **Pandas**, **NumPy**, and **Plotly**.
 
 ---
 
 ## 📌 Project Overview
 
-The **E-Commerce Sales Analytics System** enables retail administrators and business analysts to manage the complete sales lifecycle—from customers and catalog inventory to multi-item orders. It automatically processes transactional history into executive Key Performance Indicators (KPIs) and interactive visualizations, while offering a high-performance CSV ingestion pipeline powered by Pandas.
+**SalesPulse** enables retail managers and business analysts to manage the complete sales lifecycle—from customers and catalog inventory to multi-item orders. It automatically processes transactional history into executive Key Performance Indicators (KPIs) and interactive visualizations, featuring a high-performance CSV ingestion pipeline powered by Pandas with smart column auto-mapping.
 
 ---
 
@@ -121,9 +121,10 @@ erDiagram
 ### 1. Prerequisites
 Ensure you have Python 3.10+ installed.
 
-### 2. Navigate to Project Directory
+### 1. Clone the Repository
 ```bash
-cd "C:\Users\Atharv C\.gemini\antigravity\scratch\ecommerce-analytics"
+git clone https://github.com/adipat/SalesPulse.git
+cd SalesPulse
 ```
 
 ### 3. Create & Activate Virtual Environment (Optional if using global environment)
