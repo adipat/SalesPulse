@@ -1,39 +1,441 @@
-{% extends 'core/base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | E-Commerce Sales Analytics System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Font: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-{% block title %}Login | E-Commerce Sales Analytics{% endblock %}
+    <style>
+        :root {
+            --bg-dark: #080c14;
+            --card-dark: rgba(15, 23, 42, 0.75);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --input-bg: #0f172a;
+            --input-border: #334155;
+            --accent-blue: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.35);
+        }
 
-{% block content %}
-<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
-    <div class="col-md-5 col-lg-4">
-        <div class="card p-4 shadow-sm border-0">
-            <div class="text-center mb-4">
-                <i class="bi bi-shield-lock-fill text-primary" style="font-size: 2.5rem;"></i>
-                <h4 class="fw-bold mt-2">Sign In</h4>
-                <p class="text-muted small">Access your Sales Analytics System</p>
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-dark);
+            min-height: 100vh;
+            color: #f1f5f9;
+            overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Ambient Glow Background */
+        .ambient-glow-1 {
+            position: absolute;
+            top: -15%;
+            left: -10%;
+            width: 650px;
+            height: 650px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.22) 0%, rgba(37, 99, 235, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(40px);
+        }
+
+        .ambient-glow-2 {
+            position: absolute;
+            bottom: -20%;
+            right: -10%;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(147, 51, 234, 0.18) 0%, rgba(147, 51, 234, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(50px);
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 1140px;
+            margin: auto;
+            padding: 2rem 1.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Dark Glassmorphic Card */
+        .glass-card {
+            background: var(--card-dark);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            padding: 2.75rem 2.5rem;
+        }
+
+        /* Feature Pill */
+        .feature-badge {
+            background: rgba(59, 130, 246, 0.12);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Form Inputs */
+        .input-group-custom {
+            position: relative;
+            margin-bottom: 1.25rem;
+        }
+
+        .input-group-custom .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 1.1rem;
+            pointer-events: none;
+            transition: color 0.2s ease;
+            z-index: 5;
+        }
+
+        .form-control-dark {
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: #f8fafc;
+            border-radius: 12px;
+            padding: 0.85rem 1rem 0.85rem 2.85rem;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .form-control-dark:focus {
+            background-color: #131d31;
+            border-color: #3b82f6;
+            color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+            outline: none;
+        }
+
+        .form-control-dark:focus + .input-icon,
+        .input-group-custom:focus-within .input-icon {
+            color: #60a5fa;
+        }
+
+        .form-control-dark::placeholder {
+            color: #475569;
+        }
+
+        /* Submit Button */
+        .btn-glow-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border: none;
+            color: #ffffff;
+            font-weight: 600;
+            border-radius: 12px;
+            padding: 0.9rem;
+            font-size: 1rem;
+            box-shadow: 0 4px 18px rgba(37, 99, 235, 0.45);
+            transition: all 0.25s ease;
+        }
+
+        .btn-glow-primary:hover {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            box-shadow: 0 6px 24px rgba(59, 130, 246, 0.6);
+            transform: translateY(-1px);
+            color: #ffffff;
+        }
+
+        /* Demo Credentials Pill */
+        .demo-chip {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(51, 65, 85, 0.8);
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .demo-chip:hover {
+            background: rgba(51, 65, 85, 0.6);
+            border-color: #475569;
+        }
+
+        /* Custom Dark Alerts */
+        .alert-dark-custom {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #93c5fd;
+            border-radius: 12px;
+            padding: 0.85rem 1.15rem;
+            font-size: 0.88rem;
+        }
+
+        .alert-dark-error {
+            background: rgba(69, 10, 10, 0.8);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            color: #fca5a5;
+        }
+
+        /* Showcase Points */
+        .showcase-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .showcase-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: rgba(37, 99, 235, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #60a5fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .password-toggle-btn {
+            position: absolute;
+            right: 0.85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .password-toggle-btn:hover {
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient background glows -->
+    <div class="ambient-glow-1"></div>
+    <div class="ambient-glow-2"></div>
+
+    <div class="auth-container">
+        <div class="row g-5 align-items-center">
+            
+            <!-- Left Column: High-End Project Showcase -->
+            <div class="col-lg-6 d-none d-lg-block pe-lg-4">
+                <div class="mb-4">
+                    <span class="feature-badge mb-3">
+                        <i class="bi bi-shield-check"></i> BCA Final Year Portfolio Project
+                    </span>
+                    <h1 class="display-6 fw-bold text-white mb-3" style="letter-spacing: -0.02em;">
+                        E-Commerce Sales <span style="background: linear-gradient(135deg, #60a5fa, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Analytics System</span>
+                    </h1>
+                    <p class="text-secondary fs-6 lead mb-4" style="line-height: 1.6;">
+                        An end-to-end management portal and real-time business intelligence suite powered by Django, SQLite, Pandas, & Plotly.
+                    </p>
+                </div>
+
+                <!-- Showcase Feature Highlights -->
+                <div class="showcase-item">
+                    <div class="showcase-icon">
+                        <i class="bi bi-speedometer2"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-white fw-semibold mb-1">Executive Analytics Dashboard</h6>
+                        <p class="text-secondary small mb-0">7 live KPIs & 8 interactive Plotly charts tracking monthly revenue trends, category margins, and customer retention.</p>
+                    </div>
+                </div>
+
+                <div class="showcase-item">
+                    <div class="showcase-icon">
+                        <i class="bi bi-receipt-cutoff"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-white fw-semibold mb-1">Audit-Grade Order Management</h6>
+                        <p class="text-secondary small mb-0">Multi-item order builder preserving historical price integrity with live subtotal computations.</p>
+                    </div>
+                </div>
+
+                <div class="showcase-item">
+                    <div class="showcase-icon">
+                        <i class="bi bi-file-earmark-spreadsheet"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-white fw-semibold mb-1">Pandas Bulk CSV Ingestion</h6>
+                        <p class="text-secondary small mb-0">Automated ETL pipeline featuring data type coercion, missing-value sanitization, and atomic SQL persistence.</p>
+                    </div>
+                </div>
+
+                <!-- Live Metrics Teaser Pill -->
+                <div class="p-3 rounded-4 mt-4" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.06);">
+                    <div class="d-flex align-items-center justify-content-between text-secondary small">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-circle p-1"></span>
+                            <span>System Status: <strong>Online</strong></span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <span class="badge bg-dark border border-secondary text-light">Python 3.11</span>
+                            <span class="badge bg-dark border border-secondary text-light">Django 5.2</span>
+                            <span class="badge bg-dark border border-secondary text-light">Pandas & Plotly</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <form method="POST">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label class="form-label small fw-semibold">Username</label>
-                    <input type="text" name="username" class="form-control" placeholder="Enter username" required autofocus>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label small fw-semibold">Password</label>
-                    <input type="password" name="password" class="form-control" placeholder="Enter password" required>
-                </div>
-                <div class="d-grid mt-4">
-                    <button type="submit" class="btn btn-primary">Log In</button>
-                </div>
-            </form>
+            <!-- Right Column: Glassmorphism Dark Sign-In Card -->
+            <div class="col-lg-6 col-md-9 mx-auto">
+                <div class="glass-card">
+                    
+                    <!-- Header -->
+                    <div class="text-center mb-4">
+                        <div class="d-inline-flex p-3 rounded-circle mb-3" style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.25);">
+                            <i class="bi bi-person-badge-fill text-primary" style="font-size: 2rem;"></i>
+                        </div>
+                        <h3 class="fw-bold text-white mb-1">Welcome Back</h3>
+                        <p class="text-secondary small mb-0">Sign in to access your sales analytics workspace</p>
+                    </div>
 
-            <div class="text-center mt-3 pt-3 border-top">
-                <p class="small text-muted mb-0">Don't have an account? <a href="{% url 'core:register' %}" class="fw-semibold text-primary">Register here</a></p>
-                <div class="alert alert-secondary py-1 px-2 mt-3 small text-muted text-start" style="font-size: 0.78rem;">
-                    <strong>Default Admin:</strong> <code>admin</code> / <code>admin123</code>
+                    <!-- Flash messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-dark-custom {% if 'error' in message.tags %}alert-dark-error{% endif %} mb-4 d-flex align-items-center justify-content-between" role="alert">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi {% if 'error' in message.tags %}bi-exclamation-triangle-fill text-danger{% else %}bi-info-circle-fill text-info{% endif %}"></i>
+                                    <span>{{ message }}</span>
+                                </div>
+                                <button type="button" class="btn-close btn-close-white small py-0" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Form -->
+                    <form method="POST" id="loginForm">
+                        {% csrf_token %}
+                        
+                        <div class="input-group-custom">
+                            <i class="bi bi-person input-icon"></i>
+                            <input type="text" name="username" id="usernameField" class="form-control-dark" placeholder="Username (e.g. admin)" required autofocus>
+                        </div>
+
+                        <div class="input-group-custom">
+                            <i class="bi bi-shield-lock input-icon"></i>
+                            <input type="password" name="password" id="passwordField" class="form-control-dark" placeholder="Password" required>
+                            <button type="button" class="password-toggle-btn" id="togglePasswordBtn" title="Toggle password visibility">
+                                <i class="bi bi-eye" id="toggleIcon"></i>
+                            </button>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input bg-dark border-secondary" type="checkbox" id="rememberMe">
+                                <label class="form-check-label text-secondary small" for="rememberMe">
+                                    Remember session
+                                </label>
+                            </div>
+                            <span class="text-secondary small">Portfolio Mode</span>
+                        </div>
+
+                        <div class="d-grid mb-4">
+                            <button type="submit" class="btn btn-glow-primary">
+                                <i class="bi bi-box-arrow-in-right me-2"></i> Sign In to Dashboard
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- 1-Click Demo Fill Chip (Interviewer/Recruiter friendly) -->
+                    <div class="demo-chip mb-4" id="demoChip" title="Click to auto-fill default admin credentials">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-lightning-charge-fill text-warning"></i>
+                            <div>
+                                <div class="text-white small fw-semibold">Quick Demo Login</div>
+                                <div class="text-secondary" style="font-size: 0.76rem;">Click to auto-fill <code>admin</code> / <code>admin123</code></div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-light border-secondary py-1 px-2" style="font-size: 0.75rem;" id="fillDemoBtn">
+                            Auto Fill
+                        </button>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="text-center pt-3 border-top border-secondary border-opacity-25">
+                        <p class="text-secondary small mb-0">
+                            Don't have an account? 
+                            <a href="{% url 'core:register' %}" class="text-primary fw-semibold text-decoration-none">
+                                Register Analyst Account &rarr;
+                            </a>
+                        </p>
+                    </div>
+
                 </div>
             </div>
+
         </div>
     </div>
-</div>
-{% endblock %}
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Password Visibility Toggle
+        const passwordField = document.getElementById('passwordField');
+        const toggleBtn = document.getElementById('togglePasswordBtn');
+        const toggleIcon = document.getElementById('toggleIcon');
+
+        toggleBtn.addEventListener('click', function() {
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.classList.replace('bi-eye', 'bi-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.classList.replace('bi-eye-slash', 'bi-eye');
+            }
+        });
+
+        // 1-Click Demo Credentials Auto-Fill
+        function fillDemoCredentials() {
+            document.getElementById('usernameField').value = 'admin';
+            document.getElementById('passwordField').value = 'admin123';
+            
+            // Visual feedback on the chip
+            const chip = document.getElementById('demoChip');
+            chip.style.borderColor = '#3b82f6';
+            chip.style.backgroundColor = 'rgba(59, 130, 246, 0.15)';
+            setTimeout(() => {
+                chip.style.borderColor = '';
+                chip.style.backgroundColor = '';
+            }, 800);
+        }
+
+        document.getElementById('demoChip').addEventListener('click', fillDemoCredentials);
+        document.getElementById('fillDemoBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            fillDemoCredentials();
+        });
+    </script>
+</body>
+</html>
