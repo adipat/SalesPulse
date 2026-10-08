@@ -142,12 +142,15 @@ def get_analytics_data():
     # 6. Chart Generation (Plotly)
     charts = {}
 
-    # Common styling template for dashboard
+    # Common styling template for dark dashboard
     chart_layout = dict(
+        template='plotly_dark',
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(family='Inter, -apple-system, sans-serif', size=12, color='#334155'),
-        margin=dict(l=30, r=30, t=40, b=30),
+        font=dict(family='Plus Jakarta Sans, -apple-system, sans-serif', size=12, color='#94a3b8'),
+        margin=dict(l=35, r=25, t=45, b=35),
+        xaxis=dict(gridcolor='rgba(255,255,255,0.06)', zerolinecolor='rgba(255,255,255,0.08)'),
+        yaxis=dict(gridcolor='rgba(255,255,255,0.06)', zerolinecolor='rgba(255,255,255,0.08)'),
     )
 
     # Chart 1: Monthly Revenue Trend (Line Chart)
@@ -182,7 +185,8 @@ def get_analytics_data():
             y='order_id',
             title="Monthly Orders Volume",
             labels={'year_month': 'Month', 'order_id': 'Number of Orders'},
-            color_discrete_sequence=['#3b82f6']
+            color_discrete_sequence=['#3b82f6'],
+            template='plotly_dark'
         )
         fig2.update_layout(**chart_layout)
         charts['monthly_orders'] = fig2.to_html(full_html=False, include_plotlyjs=False)
@@ -200,7 +204,8 @@ def get_analytics_data():
             y='revenue',
             title="Revenue by Category (₹)",
             labels={'category_name': 'Category', 'revenue': 'Revenue (₹)'},
-            color_discrete_sequence=['#0ea5e9']
+            color_discrete_sequence=['#0ea5e9'],
+            template='plotly_dark'
         )
         fig3.update_layout(**chart_layout)
         charts['category_revenue'] = fig3.to_html(full_html=False, include_plotlyjs=False)
@@ -212,7 +217,8 @@ def get_analytics_data():
             y='profit',
             title="Profit by Category (₹)",
             labels={'category_name': 'Category', 'profit': 'Profit (₹)'},
-            color_discrete_sequence=['#10b981']
+            color_discrete_sequence=['#10b981'],
+            template='plotly_dark'
         )
         fig4.update_layout(**chart_layout)
         charts['category_profit'] = fig4.to_html(full_html=False, include_plotlyjs=False)
@@ -228,7 +234,8 @@ def get_analytics_data():
             orientation='h',
             title="Top 10 Products by Units Sold",
             labels={'quantity': 'Units Sold', 'product_name': 'Product'},
-            color_discrete_sequence=['#6366f1']
+            color_discrete_sequence=['#818cf8'],
+            template='plotly_dark'
         )
         fig5.update_layout(**chart_layout)
         charts['top_products'] = fig5.to_html(full_html=False, include_plotlyjs=False)
@@ -244,7 +251,8 @@ def get_analytics_data():
             y='total_amount',
             title="Geographic Sales by City (₹)",
             labels={'shipping_city': 'City', 'total_amount': 'Sales (₹)'},
-            color_discrete_sequence=['#f59e0b']
+            color_discrete_sequence=['#f59e0b'],
+            template='plotly_dark'
         )
         fig6.update_layout(**chart_layout)
         charts['city_sales'] = fig6.to_html(full_html=False, include_plotlyjs=False)
@@ -258,9 +266,10 @@ def get_analytics_data():
             status_counts,
             values='count',
             names='status',
-            hole=0.5,
+            hole=0.55,
             title="Order Status Distribution",
-            color_discrete_sequence=px.colors.qualitative.Safe
+            color_discrete_sequence=['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#a855f7'],
+            template='plotly_dark'
         )
         fig7.update_layout(**chart_layout)
         charts['status_distribution'] = fig7.to_html(full_html=False, include_plotlyjs=False)
@@ -275,9 +284,10 @@ def get_analytics_data():
             cust_type_df,
             values='Count',
             names='Type',
-            hole=0.45,
+            hole=0.55,
             title="Customer Retention Breakdown",
-            color_discrete_sequence=['#94a3b8', '#3b82f6']
+            color_discrete_sequence=['#64748b', '#3b82f6'],
+            template='plotly_dark'
         )
         fig8.update_layout(**chart_layout)
         charts['customer_types'] = fig8.to_html(full_html=False, include_plotlyjs=False)

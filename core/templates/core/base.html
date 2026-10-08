@@ -8,26 +8,31 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Plotly.js -->
     <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 
     <style>
         :root {
             --sidebar-width: 260px;
-            --primary-color: #2563eb;
-            --sidebar-bg: #0f172a;
-            --body-bg: #f8fafc;
-            --card-border: #e2e8f0;
+            --bg-dark: #080c14;
+            --sidebar-bg: #090d16;
+            --topbar-bg: rgba(9, 13, 22, 0.85);
+            --card-dark: rgba(15, 23, 42, 0.75);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --primary-accent: #3b82f6;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--body-bg);
-            color: #1e293b;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
         }
 
         /* Sidebar Styling */
@@ -41,7 +46,7 @@
             z-index: 1000;
             display: flex;
             flex-direction: column;
-            border-right: 1px solid #1e293b;
+            border-right: 1px solid var(--card-border);
         }
 
         .sidebar-brand {
@@ -52,17 +57,18 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            border-bottom: 1px solid #1e293b;
+            border-bottom: 1px solid var(--card-border);
         }
 
         .sidebar-brand i {
             color: #38bdf8;
-            font-size: 1.4rem;
+            font-size: 1.35rem;
+            filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
         }
 
         .nav-section-title {
-            padding: 1rem 1.25rem 0.5rem;
-            font-size: 0.72rem;
+            padding: 1.15rem 1.25rem 0.4rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 0.08em;
             color: #64748b;
@@ -70,25 +76,28 @@
         }
 
         .sidebar .nav-link {
-            color: #94a3b8;
-            padding: 0.75rem 1.25rem;
+            color: var(--text-muted);
+            padding: 0.7rem 1.25rem;
+            margin: 0.15rem 0.75rem;
             display: flex;
             align-items: center;
             gap: 0.85rem;
-            font-size: 0.92rem;
+            font-size: 0.9rem;
             font-weight: 500;
-            border-radius: 0;
+            border-radius: 10px;
             transition: all 0.2s ease;
         }
 
         .sidebar .nav-link:hover {
             color: #ffffff;
-            background-color: #1e293b;
+            background-color: rgba(30, 41, 59, 0.7);
         }
 
         .sidebar .nav-link.active {
             color: #ffffff;
-            background-color: #1d4ed8;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.35), rgba(37, 99, 235, 0.15));
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.2);
             font-weight: 600;
         }
 
@@ -96,18 +105,22 @@
             font-size: 1.15rem;
         }
 
-        /* Main Content */
+        /* Main Content Shell */
         .main-content {
             margin-left: var(--sidebar-width);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            background-color: var(--bg-dark);
         }
 
+        /* Top Navbar */
         .top-navbar {
-            background-color: #ffffff;
+            background: var(--topbar-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--card-border);
-            padding: 0.85rem 2rem;
+            padding: 0.95rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -121,91 +134,143 @@
             flex: 1;
         }
 
-        /* Modern Cards */
+        /* Dark Cards */
         .card {
             border: 1px solid var(--card-border);
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            background-color: #ffffff;
+            border-radius: 16px;
+            background: var(--card-dark);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4);
+            color: var(--text-main);
         }
 
         .card-header {
-            background-color: #ffffff;
+            background-color: transparent;
             border-bottom: 1px solid var(--card-border);
             font-weight: 600;
+            color: #ffffff;
             padding: 1rem 1.25rem;
         }
 
-        .kpi-card {
-            border-radius: 12px;
-            padding: 1.25rem;
-            background: #ffffff;
-            border: 1px solid var(--card-border);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-        }
-
-        .kpi-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-        }
-
-        .kpi-title {
-            font-size: 0.82rem;
-            text-transform: uppercase;
-            font-weight: 600;
-            letter-spacing: 0.05em;
-            color: #64748b;
-            margin-bottom: 0.35rem;
-        }
-
-        .kpi-value {
-            font-size: 1.65rem;
-            font-weight: 700;
-            color: #0f172a;
-        }
-
-        .kpi-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-        }
-
-        /* Buttons & Badges */
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-            font-weight: 500;
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-        }
-
-        .btn-primary:hover {
-            background-color: #1d4ed8;
-            border-color: #1d4ed8;
-        }
-
-        .table > :not(caption) > * > * {
-            padding: 0.85rem 1rem;
+        /* Tables in Dark Mode */
+        .table {
+            color: var(--text-main);
+            border-color: rgba(255, 255, 255, 0.06);
+            --bs-table-bg: transparent;
         }
 
         .table th {
             font-weight: 600;
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             text-transform: uppercase;
-            letter-spacing: 0.04em;
-            color: #64748b;
-            background-color: #f8fafc;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            background-color: rgba(15, 23, 42, 0.85);
+            border-bottom: 1px solid var(--card-border);
         }
 
-        /* Flash Messages */
-        .alert {
-            border-radius: 8px;
+        .table td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(30, 41, 59, 0.4);
+            color: #ffffff;
+        }
+
+        /* Form Inputs in Dark Mode */
+        .form-control, .form-select {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            color: #f8fafc;
+            border-radius: 10px;
+            padding: 0.65rem 0.95rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: #131d31;
+            border-color: var(--primary-accent);
+            color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: #475569;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
             border: none;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            color: #ffffff;
+            font-weight: 600;
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            box-shadow: 0 6px 18px rgba(59, 130, 246, 0.5);
+            transform: translateY(-1px);
+            color: #ffffff;
+        }
+
+        .btn-outline-secondary {
+            border-color: #334155;
+            color: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #1e293b;
+            border-color: #475569;
+            color: #ffffff;
+        }
+
+        /* Dark Flash Messages */
+        .alert {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            color: #f1f5f9;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        }
+
+        .alert-success {
+            border-color: rgba(16, 185, 129, 0.3);
+            background: rgba(6, 78, 59, 0.35);
+            color: #6ee7b7;
+        }
+
+        .alert-danger {
+            border-color: rgba(239, 68, 68, 0.3);
+            background: rgba(127, 29, 29, 0.35);
+            color: #fca5a5;
+        }
+
+        .alert-info {
+            border-color: rgba(59, 130, 246, 0.3);
+            background: rgba(30, 58, 138, 0.35);
+            color: #93c5fd;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
         }
     </style>
     {% block extra_css %}{% endblock %}
@@ -250,10 +315,12 @@
 
         <div class="mt-auto p-3 border-top border-secondary border-opacity-25 text-secondary small">
             <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-person-circle fs-5 text-light"></i>
+                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa;">
+                    <i class="bi bi-person-fill"></i>
+                </div>
                 <div class="overflow-hidden">
-                    <div class="text-light fw-semibold text-truncate">{{ request.user.username|default:"Guest" }}</div>
-                    <div class="text-muted" style="font-size: 0.75rem;">BCA Project Suite</div>
+                    <div class="text-white fw-semibold text-truncate small">{{ request.user.first_name|default:request.user.username }}</div>
+                    <div class="text-secondary" style="font-size: 0.72rem;">{{ request.user.username }}</div>
                 </div>
             </div>
         </div>
@@ -264,15 +331,17 @@
         <!-- Top Navbar -->
         <header class="top-navbar">
             <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-primary-subtle text-primary fw-medium px-2 py-1">Python 3.11</span>
-                <span class="badge bg-secondary-subtle text-secondary fw-medium px-2 py-1">Django 5.2</span>
-                <span class="badge bg-info-subtle text-info-emphasis fw-medium px-2 py-1">Pandas & Plotly</span>
+                <span class="text-secondary small fw-semibold">
+                    <i class="bi bi-shield-check text-primary me-1"></i> E-Commerce Intelligence Workspace
+                </span>
             </div>
 
             <div class="d-flex align-items-center gap-3">
                 {% if request.user.is_authenticated %}
-                    <span class="text-muted small">Logged in as <strong>{{ request.user.username }}</strong></span>
-                    <a href="{% url 'core:logout' %}" class="btn btn-sm btn-outline-danger">
+                    <div class="d-flex align-items-center gap-2 text-secondary small">
+                        <span>Signed in as <strong class="text-white">{{ request.user.first_name|default:request.user.username }}</strong></span>
+                    </div>
+                    <a href="{% url 'core:logout' %}" class="btn btn-sm btn-outline-danger px-3 py-1 d-flex align-items-center gap-1" style="border-radius: 8px;">
                         <i class="bi bi-box-arrow-right"></i> Logout
                     </a>
                 {% else %}
@@ -287,8 +356,9 @@
                 <div class="container-fluid px-0 mb-3">
                     {% for message in messages %}
                         <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                            <i class="bi {% if message.tags == 'success' %}bi-check-circle-fill{% elif message.tags == 'error' %}bi-exclamation-triangle-fill{% else %}bi-info-circle-fill{% endif %} me-2"></i>
                             {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     {% endfor %}
                 </div>
