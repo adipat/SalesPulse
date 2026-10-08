@@ -520,3 +520,31 @@ def csv_import_view(request):
         form = CSVUploadForm()
 
     return render(request, 'core/import_csv.html', {'form': form, 'summary': summary})
+
+
+@login_required
+def download_sample_csv(request):
+    """Download sample CSV file for testing bulk ingestion."""
+    from pathlib import Path
+    from django.conf import settings
+    from django.http import FileResponse, HttpResponse
+
+    sample_candidates = [
+        Path(settings.BASE_DIR).parent / 'sample_sales_data.csv',
+        Path(settings.BASE_DIR) / 'sample_sales_data.csv',
+    ]
+    for p in sample_candidates:
+        if p.exists():
+            return FileResponse(open(p, 'rb'), as_attachment=True, filename='sample_sales_data.csv')
+
+    # Fallback template
+    sample_content = (
+        "customer_name,email,phone,city,state,product_name,category,quantity,selling_price,payment_method,status\n"
+        "Kunal Mehra,kunal.m@example.com,9820011122,Mumbai,Maharashtra,Dell XPS 13 Laptop,Electronics,1,75000.00,Credit Card,Delivered\n"
+        "Meera Nambiar,meera.n@example.com,9840022233,Chennai,Tamil Nadu,Sony WH-1000XM5 Headphones,Electronics,1,24999.00,UPI,Delivered\n"
+        "Siddharth Rao,sid.rao@example.com,9880033344,Bengaluru,Karnataka,USB-C 7-in-1 Hub,Computer Accessories,3,2499.00,UPI,Delivered\n"
+    )
+    response = HttpResponse(sample_content, content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="sample_sales_data.csv"'
+    return response
+
