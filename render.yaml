@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: salespulse
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn ecommerce_analytics.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
