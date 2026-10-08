@@ -429,20 +429,46 @@ def csv_import_view(request):
                 # Read CSV via Pandas DataFrame
                 df = pd.read_csv(uploaded_file)
 
-                # Required columns validation
-                required_cols = [
-                    'customer_name', 'email', 'phone', 'city', 'state',
-                    'product_name', 'category', 'quantity', 'selling_price',
-                    'payment_method', 'status'
-                ]
-                missing_cols = [col for col in required_cols if col not in df.columns]
+                # Smart Column Normalization for Kaggle, Superstore, & custom datasets
+                col_rename = {}
+                for col in df.columns:
+                    clean_col = str(col).strip().lower().replace('_', ' ').replace('-', ' ')
+                    if clean_col in ['customer name', 'customer', 'client name', 'client']:
+                        col_rename[col] = 'customer_name'
+                    elif clean_col in ['product name', 'product', 'item name', 'item']:
+                        col_rename[col] = 'product_name'
+                    elif clean_col in ['category', 'product category', 'dept', 'department']:
+                        col_rename[col] = 'category'
+                    elif clean_col in ['sales', 'amount', 'selling price', 'price', 'unit price', 'total']:
+                        col_rename[col] = 'selling_price'
+                    elif clean_col in ['quantity', 'qty', 'units', 'count']:
+                        col_rename[col] = 'quantity'
+                    elif clean_col in ['city', 'shipping city']:
+                        col_rename[col] = 'city'
+                    elif clean_col in ['state', 'shipping state', 'province', 'region']:
+                        col_rename[col] = 'state'
+                    elif clean_col in ['email', 'customer email']:
+                        col_rename[col] = 'email'
+                    elif clean_col in ['phone', 'contact', 'mobile', 'phone number']:
+                        col_rename[col] = 'phone'
+                    elif clean_col in ['payment method', 'payment mode', 'ship mode', 'payment']:
+                        col_rename[col] = 'payment_method'
+                    elif clean_col in ['status', 'order status']:
+                        col_rename[col] = 'status'
+
+                df = df.rename(columns=col_rename)
+
+                # Essential fields validation
+                essential_cols = ['customer_name', 'product_name', 'selling_price']
+                missing_cols = [col for col in essential_cols if col not in df.columns]
 
                 if missing_cols:
-                    messages.error(request, f"Invalid CSV format! Missing required columns: {', '.join(missing_cols)}")
+                    messages.error(request, f"Could not detect essential columns! Missing: {', '.join(missing_cols)}. Please check your CSV header.")
                 else:
-                    # Clean data using Pandas
-                    df = df.dropna(subset=['customer_name', 'email', 'product_name'])
-                    df['quantity'] = pd.to_numeric(df['quantity'], errors='coerce').fillna(1).astype(int)
+                    import re
+                    # Clean essential fields
+                    df = df.dropna(subset=['customer_name', 'product_name'])
+                    df['quantity'] = pd.to_numeric(df.get('quantity', 1), errors='coerce').fillna(1).astype(int)
                     df['selling_price'] = pd.to_numeric(df['selling_price'], errors='coerce').fillna(0.0)
 
                     total_rows = len(df)
@@ -453,38 +479,63 @@ def csv_import_view(request):
                     with transaction.atomic():
                         for index, row in df.iterrows():
                             try:
+                                c_name = str(row['customer_name']).strip()
+                                # Email synthesis if missing from external dataset
+                                if 'email' in df.columns and pd.notna(row['email']) and str(row['email']).strip():
+                                    c_email = str(row['email']).strip().lower()
+                                else:
+                                    clean_prefix = re.sub(r'[^a-zA-Z0-9]', '.', c_name).strip('.').lower()
+                                    c_email = f"{clean_prefix or 'customer'}@example.com"
+
+                                c_phone = str(row.get('phone', '9800000000')).strip()
+                                if not c_phone or c_phone == 'nan':
+                                    c_phone = '9800000000'
+
+                                c_city = str(row.get('city', 'Mumbai')).strip()
+                                if not c_city or c_city == 'nan':
+                                    c_city = 'Mumbai'
+
+                                c_state = str(row.get('state', 'Maharashtra')).strip()
+                                if not c_state or c_state == 'nan':
+                                    c_state = 'Maharashtra'
+
                                 # 1. Customer
                                 customer, _ = Customer.objects.get_or_create(
-                                    email=str(row['email']).strip(),
+                                    email=c_email,
                                     defaults={
-                                        'name': str(row['customer_name']).strip(),
-                                        'phone': str(row.get('phone', '')).strip(),
-                                        'city': str(row.get('city', 'Mumbai')).strip(),
-                                        'state': str(row.get('state', 'Maharashtra')).strip(),
+                                        'name': c_name,
+                                        'phone': c_phone,
+                                        'city': c_city,
+                                        'state': c_state,
                                     }
                                 )
 
                                 # 2. Category
-                                category, _ = Category.objects.get_or_create(
-                                    name=str(row.get('category', 'General')).strip()
-                                )
+                                cat_name = str(row.get('category', 'General')).strip()
+                                if not cat_name or cat_name == 'nan':
+                                    cat_name = 'General'
+                                category, _ = Category.objects.get_or_create(name=cat_name)
 
                                 # 3. Product
-                                price_val = Decimal(str(row['selling_price']))
-                                cost_val = price_val * Decimal('0.70')  # estimate cost if not provided
+                                price_val = Decimal(str(max(1.0, float(row['selling_price']))))
+                                cost_val = price_val * Decimal('0.70')
+                                prod_name = str(row['product_name']).strip()
                                 product, _ = Product.objects.get_or_create(
-                                    name=str(row['product_name']).strip(),
+                                    name=prod_name,
                                     defaults={
                                         'category': category,
                                         'price': price_val,
                                         'cost_price': cost_val,
-                                        'stock': 50,
+                                        'stock': 100,
                                     }
                                 )
 
-                                # 4. Order
-                                status = str(row.get('status', 'Delivered')).strip()
-                                pay_method = str(row.get('payment_method', 'UPI')).strip()
+                                # 4. Order status & payment mapping
+                                status_raw = str(row.get('status', 'Delivered')).strip()
+                                status = 'Delivered' if status_raw.lower() not in ['pending', 'processing', 'shipped', 'delivered', 'cancelled'] else status_raw.capitalize()
+
+                                pay_raw = str(row.get('payment_method', 'UPI')).strip()
+                                pay_method = pay_raw if pay_raw in ['UPI', 'Credit Card', 'Debit Card', 'Cash on Delivery', 'Net Banking'] else 'UPI'
 
                                 order = Order.objects.create(
                                     customer=customer,
@@ -498,7 +549,7 @@ def csv_import_view(request):
                                 OrderItem.objects.create(
                                     order=order,
                                     product=product,
-                                    quantity=int(row['quantity']),
+                                    quantity=max(1, int(row.get('quantity', 1))),
                                     selling_price=price_val,
                                 )
                                 order.update_total()
@@ -511,7 +562,7 @@ def csv_import_view(request):
                         'total_rows': total_rows,
                         'imported': imported,
                         'skipped': skipped,
-                        'errors': errors[:5]  # first 5 errors to avoid flooding
+                        'errors': errors[:5]
                     }
                     messages.success(request, f"Import process completed: {imported} orders imported successfully.")
             except Exception as e:
@@ -547,4 +598,18 @@ def download_sample_csv(request):
     response = HttpResponse(sample_content, content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="sample_sales_data.csv"'
     return response
+
+
+@login_required
+def download_superstore_csv(request):
+    """Download 100-row real Superstore dataset fetched from the web."""
+    from pathlib import Path
+    from django.conf import settings
+    from django.http import FileResponse, Http404
+
+    target = Path(settings.BASE_DIR).parent / 'superstore_dataset_test.csv'
+    if target.exists():
+        return FileResponse(open(target, 'rb'), as_attachment=True, filename='superstore_dataset_test.csv')
+    raise Http404("Superstore dataset not found.")
+
 
