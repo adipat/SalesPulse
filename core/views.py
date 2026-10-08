@@ -426,8 +426,8 @@ def csv_import_view(request):
         if form.is_valid():
             uploaded_file = request.FILES['csv_file']
             try:
-                # Read CSV via Pandas DataFrame
-                df = pd.read_csv(uploaded_file)
+                # Read CSV via Pandas DataFrame (with resilient error recovery for internet datasets)
+                df = pd.read_csv(uploaded_file, on_bad_lines='skip')
 
                 # Smart Column Normalization for Kaggle, Superstore, & custom datasets
                 col_rename = {}
@@ -534,8 +534,17 @@ def csv_import_view(request):
                                 status_raw = str(row.get('status', 'Delivered')).strip()
                                 status = 'Delivered' if status_raw.lower() not in ['pending', 'processing', 'shipped', 'delivered', 'cancelled'] else status_raw.capitalize()
 
-                                pay_raw = str(row.get('payment_method', 'UPI')).strip()
-                                pay_method = pay_raw if pay_raw in ['UPI', 'Credit Card', 'Debit Card', 'Cash on Delivery', 'Net Banking'] else 'UPI'
+                                pay_lower = str(row.get('payment_method', 'UPI')).strip().lower()
+                                if 'cod' in pay_lower or 'cash' in pay_lower:
+                                    pay_method = 'Cash on Delivery'
+                                elif 'debit' in pay_lower:
+                                    pay_method = 'Debit Card'
+                                elif 'card' in pay_lower or 'credit' in pay_lower:
+                                    pay_method = 'Credit Card'
+                                elif 'bank' in pay_lower or 'net' in pay_lower:
+                                    pay_method = 'Net Banking'
+                                else:
+                                    pay_method = 'UPI'
 
                                 order = Order.objects.create(
                                     customer=customer,
@@ -607,9 +616,31 @@ def download_superstore_csv(request):
     from django.conf import settings
     from django.http import FileResponse, Http404
 
-    target = Path(settings.BASE_DIR).parent / 'superstore_dataset_test.csv'
-    if target.exists():
-        return FileResponse(open(target, 'rb'), as_attachment=True, filename='superstore_dataset_test.csv')
+    candidates = [
+        Path(settings.BASE_DIR) / 'superstore_dataset_test.csv',
+        Path(settings.BASE_DIR).parent / 'superstore_dataset_test.csv',
+    ]
+    for target in candidates:
+        if target.exists():
+            return FileResponse(open(target, 'rb'), as_attachment=True, filename='superstore_dataset_test.csv')
     raise Http404("Superstore dataset not found.")
+
+
+@login_required
+def download_india_csv(request):
+    """Download 149-row Indian E-Commerce dataset from GitHub."""
+    from pathlib import Path
+    from django.conf import settings
+    from django.http import FileResponse, Http404
+
+    candidates = [
+        Path(settings.BASE_DIR) / 'ecommerce_india_online_test.csv',
+        Path(settings.BASE_DIR).parent / 'ecommerce_india_online_test.csv',
+    ]
+    for target in candidates:
+        if target.exists():
+            return FileResponse(open(target, 'rb'), as_attachment=True, filename='ecommerce_india_online_test.csv')
+    raise Http404("Indian e-commerce dataset not found.")
+
 
 

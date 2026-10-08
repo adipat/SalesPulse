@@ -42,4 +42,5 @@ urlpatterns = [
     path('import-csv/', views.csv_import_view, name='csv_import'),
     path('import-csv/download-sample/', views.download_sample_csv, name='download_sample_csv'),
     path('import-csv/download-superstore/', views.download_superstore_csv, name='download_superstore_csv'),
+    path('import-csv/download-india/', views.download_india_csv, name='download_india_csv'),
 ]
