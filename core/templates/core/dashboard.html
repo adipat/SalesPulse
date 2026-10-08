@@ -364,8 +364,8 @@
                             {% for order in recent_orders %}
                             <tr>
                                 <td class="fw-bold text-white">#{{ order.id }}</td>
-                                <td>{{ order.customer.name }}</td>
-                                <td class="small text-secondary">{{ order.order_date|date:"d M Y" }}</td>
+                                <td class="text-white fw-semibold">{{ order.customer.name }}</td>
+                                <td class="small text-light">{{ order.order_date|date:"d M Y" }}</td>
                                 <td>
                                     <span class="badge {% if order.status == 'Delivered' %}bg-success-subtle text-success border border-success-subtle{% elif order.status == 'Cancelled' %}bg-danger-subtle text-danger border border-danger-subtle{% elif order.status == 'Shipped' %}bg-info-subtle text-info border border-info-subtle{% else %}bg-warning-subtle text-warning border border-warning-subtle{% endif %}">
                                         {{ order.status }}

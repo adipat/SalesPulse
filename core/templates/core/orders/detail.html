@@ -93,14 +93,14 @@
                             {% for item in items %}
                             <tr>
                                 <td>
-                                    <div class="fw-semibold">{{ item.product.name }}</div>
-                                    <div class="text-muted small" style="font-size: 0.75rem;">Cost: ₹{{ item.product.cost_price }}</div>
+                                    <div class="fw-bold text-white">{{ item.product.name }}</div>
+                                    <div class="small" style="font-size: 0.75rem; color: #94a3b8;">Cost: ₹{{ item.product.cost_price }}</div>
                                 </td>
-                                <td><span class="badge bg-light text-dark border">{{ item.product.category.name }}</span></td>
-                                <td class="text-end">₹{{ item.selling_price|floatformat:2 }}</td>
-                                <td class="text-center">{{ item.quantity }}</td>
-                                <td class="text-end fw-semibold">₹{{ item.subtotal|floatformat:2 }}</td>
-                                <td class="text-end text-success fw-semibold">₹{{ item.profit|floatformat:2 }}</td>
+                                <td><span class="badge" style="background: rgba(30, 41, 59, 0.85); color: #f1f5f9; border: 1px solid rgba(255, 255, 255, 0.15);">{{ item.product.category.name }}</span></td>
+                                <td class="text-end text-light">₹{{ item.selling_price|floatformat:2 }}</td>
+                                <td class="text-center text-white">{{ item.quantity }}</td>
+                                <td class="text-end fw-bold text-white">₹{{ item.subtotal|floatformat:2 }}</td>
+                                <td class="text-end text-success fw-bold">₹{{ item.profit|floatformat:2 }}</td>
                             </tr>
                             {% empty %}
                             <tr>

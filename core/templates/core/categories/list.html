@@ -30,10 +30,10 @@
                         <tbody>
                             {% for cat in categories %}
                             <tr>
-                                <td class="text-muted">#{{ cat.id }}</td>
-                                <td class="fw-semibold">{{ cat.name }}</td>
+                                <td class="text-white fw-bold">#{{ cat.id }}</td>
+                                <td class="fw-bold text-white">{{ cat.name }}</td>
                                 <td>
-                                    <span class="badge bg-secondary-subtle text-secondary">
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
                                         {{ cat.products_count }} product{% if cat.products_count != 1 %}s{% endif %}
                                     </span>
                                 </td>

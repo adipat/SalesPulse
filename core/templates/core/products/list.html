@@ -62,24 +62,24 @@
                 <tbody>
                     {% for p in products %}
                     <tr>
-                        <td class="text-muted">#{{ p.id }}</td>
-                        <td class="fw-semibold">{{ p.name }}</td>
+                        <td class="text-white fw-bold">#{{ p.id }}</td>
+                        <td class="fw-bold text-white">{{ p.name }}</td>
                         <td>
-                            <span class="badge bg-light text-dark border">{{ p.category.name }}</span>
+                            <span class="badge" style="background: rgba(30, 41, 59, 0.85); color: #f1f5f9; border: 1px solid rgba(255, 255, 255, 0.15);">{{ p.category.name }}</span>
                         </td>
                         <td class="fw-bold text-primary">₹{{ p.price|floatformat:2 }}</td>
-                        <td class="text-muted">₹{{ p.cost_price|floatformat:2 }}</td>
+                        <td class="text-light">₹{{ p.cost_price|floatformat:2 }}</td>
                         <td class="text-success small fw-semibold">
                             ₹{{ p.price|add:"0" }}
                         </td>
-                        <td><strong>{{ p.stock }}</strong> units</td>
+                        <td class="text-white"><strong>{{ p.stock }}</strong> units</td>
                         <td>
                             {% if p.stock <= 0 %}
                                 <span class="badge bg-danger">Out of Stock</span>
                             {% elif p.stock < 10 %}
                                 <span class="badge bg-warning text-dark">Low Stock</span>
                             {% else %}
-                                <span class="badge bg-success-subtle text-success">In Stock</span>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle">In Stock</span>
                             {% endif %}
                         </td>
                         <td class="text-end">

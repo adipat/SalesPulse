@@ -77,9 +77,9 @@
                     </button>
                 </form>
 
-                <div class="mt-4 p-3 bg-light rounded border small">
-                    <h6 class="fw-bold mb-1"><i class="bi bi-gear-wide-connected text-primary"></i> Under the Hood:</h6>
-                    <p class="text-muted mb-0">
+                <div class="mt-4 p-3 rounded border small" style="background: rgba(30, 41, 59, 0.5); border-color: rgba(255, 255, 255, 0.08) !important;">
+                    <h6 class="fw-bold mb-1 text-white"><i class="bi bi-gear-wide-connected text-primary"></i> Under the Hood:</h6>
+                    <p class="text-secondary mb-0">
                         1. <code>pd.read_csv()</code> loads the stream into a DataFrame.<br>
                         2. Missing critical fields are filtered with <code>df.dropna()</code>.<br>
                         3. Quantities & prices are coerced into numeric types.<br>
@@ -93,11 +93,11 @@
         <div class="col-lg-6">
             <div class="card p-4 shadow-sm h-100">
                 <h5 class="fw-bold mb-3 border-bottom pb-2">Expected Column Schema</h5>
-                <p class="small text-muted mb-3">Your CSV header row must include the following column names:</p>
+                <p class="small text-secondary mb-3">Your CSV header row must include the following column names:</p>
 
                 <div class="table-responsive">
                     <table class="table table-sm table-bordered small">
-                        <thead class="table-light">
+                        <thead>
                             <tr>
                                 <th>Header</th>
                                 <th>Type</th>
