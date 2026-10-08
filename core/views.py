@@ -3,6 +3,7 @@ import pandas as pd
 from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -47,24 +48,49 @@ def login_view(request):
     if request.user.is_authenticated:
         return redirect('core:dashboard')
 
+    error_msg = None
+    not_registered = False
+    entered_username = ''
+
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                messages.success(request, f"Welcome back, {user.username}!")
-                next_url = request.GET.get('next', 'core:dashboard')
-                return redirect(next_url)
-            else:
-                messages.error(request, "Invalid username or password.")
+        entered_username = request.POST.get('username', '').strip()
+        entered_password = request.POST.get('password', '')
+        remember_me = request.POST.get('remember_me')
+
+        if not entered_username or not entered_password:
+            error_msg = "Please provide both username and password."
         else:
-            messages.error(request, "Invalid credentials provided.")
-    else:
-        form = AuthenticationForm()
-    return render(request, 'core/auth/login.html', {'form': form})
+            # Check if user exists by username or email
+            user_exists = (
+                User.objects.filter(username__iexact=entered_username).first() or
+                User.objects.filter(email__iexact=entered_username).first()
+            )
+
+            if not user_exists:
+                not_registered = True
+                error_msg = f"No account found for '{entered_username}'. You don't have an account yet — please register below."
+            else:
+                user = authenticate(request, username=user_exists.username, password=entered_password)
+                if user is not None:
+                    if user.is_active:
+                        login(request, user)
+                        if not remember_me:
+                            request.session.set_expiry(0)  # Browser closes -> session ends
+                        else:
+                            request.session.set_expiry(1209600)  # 2 weeks
+                        messages.success(request, f"Welcome back, {user.first_name or user.username}!")
+                        next_url = request.GET.get('next', 'core:dashboard')
+                        return redirect(next_url)
+                    else:
+                        error_msg = "This account is currently disabled. Please contact the administrator."
+                else:
+                    error_msg = f"Incorrect password for '{user_exists.username}'. Please verify and try again."
+
+    return render(request, 'core/auth/login.html', {
+        'error_msg': error_msg,
+        'not_registered': not_registered,
+        'entered_username': entered_username,
+    })
 
 
 def logout_view(request):

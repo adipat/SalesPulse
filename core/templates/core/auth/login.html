@@ -16,12 +16,11 @@
     <style>
         :root {
             --bg-dark: #080c14;
-            --card-dark: rgba(15, 23, 42, 0.75);
+            --card-dark: rgba(15, 23, 42, 0.78);
             --card-border: rgba(255, 255, 255, 0.08);
             --input-bg: #0f172a;
             --input-border: #334155;
             --accent-blue: #3b82f6;
-            --accent-glow: rgba(59, 130, 246, 0.35);
         }
 
         body {
@@ -65,9 +64,9 @@
 
         .auth-container {
             width: 100%;
-            max-width: 1140px;
+            max-width: 1120px;
             margin: auto;
-            padding: 2rem 1.5rem;
+            padding: 2.5rem 1.5rem;
             position: relative;
             z-index: 10;
         }
@@ -79,7 +78,7 @@
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--card-border);
             border-radius: 20px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);
             padding: 2.75rem 2.5rem;
         }
 
@@ -163,28 +162,9 @@
             color: #ffffff;
         }
 
-        /* Demo Credentials Pill */
-        .demo-chip {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(51, 65, 85, 0.8);
-            border-radius: 12px;
-            padding: 0.85rem 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .demo-chip:hover {
-            background: rgba(51, 65, 85, 0.6);
-            border-color: #475569;
-        }
-
         /* Custom Dark Alerts */
         .alert-dark-custom {
-            background: rgba(30, 41, 59, 0.9);
+            background: rgba(30, 41, 59, 0.95);
             border: 1px solid rgba(59, 130, 246, 0.3);
             color: #93c5fd;
             border-radius: 12px;
@@ -193,9 +173,19 @@
         }
 
         .alert-dark-error {
-            background: rgba(69, 10, 10, 0.8);
-            border: 1px solid rgba(239, 68, 68, 0.35);
+            background: rgba(45, 12, 18, 0.95);
+            border: 1px solid rgba(239, 68, 68, 0.45);
             color: #fca5a5;
+            border-radius: 12px;
+            padding: 0.95rem 1.15rem;
+        }
+
+        .alert-dark-not-found {
+            background: rgba(55, 28, 10, 0.95);
+            border: 1px solid rgba(245, 158, 11, 0.45);
+            color: #fde68a;
+            border-radius: 12px;
+            padding: 1rem 1.15rem;
         }
 
         /* Showcase Points */
@@ -290,21 +280,6 @@
                         <p class="text-secondary small mb-0">Automated ETL pipeline featuring data type coercion, missing-value sanitization, and atomic SQL persistence.</p>
                     </div>
                 </div>
-
-                <!-- Live Metrics Teaser Pill -->
-                <div class="p-3 rounded-4 mt-4" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.06);">
-                    <div class="d-flex align-items-center justify-content-between text-secondary small">
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-circle p-1"></span>
-                            <span>System Status: <strong>Online</strong></span>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <span class="badge bg-dark border border-secondary text-light">Python 3.11</span>
-                            <span class="badge bg-dark border border-secondary text-light">Django 5.2</span>
-                            <span class="badge bg-dark border border-secondary text-light">Pandas & Plotly</span>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- Right Column: Glassmorphism Dark Sign-In Card -->
@@ -314,18 +289,43 @@
                     <!-- Header -->
                     <div class="text-center mb-4">
                         <div class="d-inline-flex p-3 rounded-circle mb-3" style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.25);">
-                            <i class="bi bi-person-badge-fill text-primary" style="font-size: 2rem;"></i>
+                            <i class="bi bi-shield-lock-fill text-primary" style="font-size: 2rem;"></i>
                         </div>
-                        <h3 class="fw-bold text-white mb-1">Welcome Back</h3>
-                        <p class="text-secondary small mb-0">Sign in to access your sales analytics workspace</p>
+                        <h3 class="fw-bold text-white mb-1">Authorized Access Only</h3>
+                        <p class="text-secondary small mb-0">Please sign in with your registered account credentials</p>
                     </div>
 
-                    <!-- Flash messages -->
+                    <!-- Custom Error & Status Feedback -->
+                    {% if not_registered %}
+                        <!-- Account Does Not Exist Warning -->
+                        <div class="alert-dark-not-found mb-4" role="alert">
+                            <div class="d-flex align-items-start gap-2 mb-2">
+                                <i class="bi bi-person-x-fill text-warning fs-5"></i>
+                                <div>
+                                    <strong class="d-block text-white">Account Not Found</strong>
+                                    <span class="small">{{ error_msg }}</span>
+                                </div>
+                            </div>
+                            <div class="text-end mt-2">
+                                <a href="{% url 'core:register' %}" class="btn btn-sm btn-warning fw-semibold px-3 py-1">
+                                    <i class="bi bi-person-plus-fill me-1"></i> Register Account Now
+                                </a>
+                            </div>
+                        </div>
+                    {% elif error_msg %}
+                        <!-- Password / Inactive Account Error -->
+                        <div class="alert-dark-error mb-4 d-flex align-items-center gap-2" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
+                            <span class="small">{{ error_msg }}</span>
+                        </div>
+                    {% endif %}
+
+                    <!-- Django Flash messages (e.g., successful logout or registration) -->
                     {% if messages %}
                         {% for message in messages %}
-                            <div class="alert alert-dark-custom {% if 'error' in message.tags %}alert-dark-error{% endif %} mb-4 d-flex align-items-center justify-content-between" role="alert">
+                            <div class="alert alert-dark-custom mb-4 d-flex align-items-center justify-content-between" role="alert">
                                 <div class="d-flex align-items-center gap-2">
-                                    <i class="bi {% if 'error' in message.tags %}bi-exclamation-triangle-fill text-danger{% else %}bi-info-circle-fill text-info{% endif %}"></i>
+                                    <i class="bi {% if 'success' in message.tags %}bi-check-circle-fill text-success{% elif 'error' in message.tags %}bi-exclamation-circle-fill text-danger{% else %}bi-info-circle-fill text-info{% endif %}"></i>
                                     <span>{{ message }}</span>
                                 </div>
                                 <button type="button" class="btn-close btn-close-white small py-0" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -339,11 +339,11 @@
                         
                         <div class="input-group-custom">
                             <i class="bi bi-person input-icon"></i>
-                            <input type="text" name="username" id="usernameField" class="form-control-dark" placeholder="Username (e.g. admin)" required autofocus>
+                            <input type="text" name="username" id="usernameField" value="{{ entered_username }}" class="form-control-dark" placeholder="Username or Registered Email" required autofocus>
                         </div>
 
                         <div class="input-group-custom">
-                            <i class="bi bi-shield-lock input-icon"></i>
+                            <i class="bi bi-key input-icon"></i>
                             <input type="password" name="password" id="passwordField" class="form-control-dark" placeholder="Password" required>
                             <button type="button" class="password-toggle-btn" id="togglePasswordBtn" title="Toggle password visibility">
                                 <i class="bi bi-eye" id="toggleIcon"></i>
@@ -352,41 +352,29 @@
 
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <div class="form-check">
-                                <input class="form-check-input bg-dark border-secondary" type="checkbox" id="rememberMe">
+                                <input class="form-check-input bg-dark border-secondary" type="checkbox" name="remember_me" id="rememberMe">
                                 <label class="form-check-label text-secondary small" for="rememberMe">
-                                    Remember session
+                                    Keep me signed in
                                 </label>
                             </div>
-                            <span class="text-secondary small">Portfolio Mode</span>
+                            <span class="text-secondary small d-flex align-items-center gap-1">
+                                <i class="bi bi-shield-check text-success"></i> Encrypted
+                            </span>
                         </div>
 
-                        <div class="d-grid mb-4">
+                        <div class="d-grid mb-3">
                             <button type="submit" class="btn btn-glow-primary">
                                 <i class="bi bi-box-arrow-in-right me-2"></i> Sign In to Dashboard
                             </button>
                         </div>
                     </form>
 
-                    <!-- 1-Click Demo Fill Chip (Interviewer/Recruiter friendly) -->
-                    <div class="demo-chip mb-4" id="demoChip" title="Click to auto-fill default admin credentials">
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="bi bi-lightning-charge-fill text-warning"></i>
-                            <div>
-                                <div class="text-white small fw-semibold">Quick Demo Login</div>
-                                <div class="text-secondary" style="font-size: 0.76rem;">Click to auto-fill <code>admin</code> / <code>admin123</code></div>
-                            </div>
-                        </div>
-                        <button type="button" class="btn btn-sm btn-outline-light border-secondary py-1 px-2" style="font-size: 0.75rem;" id="fillDemoBtn">
-                            Auto Fill
-                        </button>
-                    </div>
-
-                    <!-- Footer -->
+                    <!-- Footer Link to Register -->
                     <div class="text-center pt-3 border-top border-secondary border-opacity-25">
                         <p class="text-secondary small mb-0">
-                            Don't have an account? 
+                            Don't have an account yet? 
                             <a href="{% url 'core:register' %}" class="text-primary fw-semibold text-decoration-none">
-                                Register Analyst Account &rarr;
+                                Register New Account &rarr;
                             </a>
                         </p>
                     </div>
@@ -414,27 +402,6 @@
                 passwordField.type = 'password';
                 toggleIcon.classList.replace('bi-eye-slash', 'bi-eye');
             }
-        });
-
-        // 1-Click Demo Credentials Auto-Fill
-        function fillDemoCredentials() {
-            document.getElementById('usernameField').value = 'admin';
-            document.getElementById('passwordField').value = 'admin123';
-            
-            // Visual feedback on the chip
-            const chip = document.getElementById('demoChip');
-            chip.style.borderColor = '#3b82f6';
-            chip.style.backgroundColor = 'rgba(59, 130, 246, 0.15)';
-            setTimeout(() => {
-                chip.style.borderColor = '';
-                chip.style.backgroundColor = '';
-            }, 800);
-        }
-
-        document.getElementById('demoChip').addEventListener('click', fillDemoCredentials);
-        document.getElementById('fillDemoBtn').addEventListener('click', function(e) {
-            e.stopPropagation();
-            fillDemoCredentials();
         });
     </script>
 </body>
